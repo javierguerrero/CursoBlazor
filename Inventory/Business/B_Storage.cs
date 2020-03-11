@@ -46,12 +46,13 @@ namespace Business
         }
 
         /* NUEVO MÉTODO */
-        public static bool IsProductInWarehouse(string id)
+        public static bool IsProductInWarehouse(string idStorage)
         {
             using (var db = new InventoryContext())
             {
-                var product = db.Storages.ToList()
-                    .Where(p => p.StorageId == id);
+                var product = db.Storages
+                                .ToList()
+                                .Where(p => p.StorageId == idStorage);
 
                 return product.Any();
             }

@@ -18,7 +18,7 @@
     <div class="form-group">
         <label for="products">Producto:</label>
         <InputSelect id="products" @bind-Value="oStorage.ProductId" class="form-control">
-            <option value="">Seleccionar producto ...</option>
+            <option value="">Seleccionar un producto ...</option>
             @foreach (var product in products)
             {
                 <option value="@product.ProductId">@product.ProductName</option>
@@ -26,7 +26,7 @@
         </InputSelect>
     </div>
     <div class="form-group">
-        <input type="button" value="Agregar Producto" @onclick="Save" class="form-control btn btn-dark" />
+        <input type="button" value="Agregar Producto" @onclick="Save" class="btn btn-dark" />
     </div>
 </EditForm>
 <hr />
