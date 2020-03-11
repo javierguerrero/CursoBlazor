@@ -12,11 +12,13 @@
     </select>
 </div>
 
+<hr />
+
 <EditForm Model="inout">
     <div class="form-group">
         <label>Producto</label>
         <InputSelect class="form-control" @bind-Value="inout.StorageId">
-            <option>Seleccione producto...</option>
+            <option>Seleccione un producto...</option>
             @foreach (var storage in storages)
             {
                 <option value="@storage.StorageId">@storage.Product.ProductName</option>
@@ -30,12 +32,18 @@
     </div>
     <div class="form-group">
         <label>Es un ingreso</label>
-        <InputCheckbox class="form-control" @bind-Value="inout.IsInput" />
+        <InputCheckbox @bind-Value="inout.IsInput" />
     </div>
     <div>
-        <input type="button" value="@buttonValue" @onclick="Save" class="form-control btn btn-warning" />
+        <input type="button" value="@buttonValue" @onclick="Save" class="btn btn-warning" />
     </div>
 </EditForm>
+
+<hr />
+
+<div class="h3 text-center">
+    @message
+</div>
 
 @code{
     InputOutputEntity inout = new InputOutputEntity();
@@ -43,8 +51,8 @@
     List<StorageEntity> storages = new List<StorageEntity>();
     ProductEntity oProduct = new ProductEntity();
     StorageEntity oStorage = new StorageEntity();
-
     string buttonValue => inout.IsInput ? "Registrar Entrada" : "Registrar Salida";
+    string message = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -53,9 +61,8 @@
 
     private void OnWarehouseChanged(ChangeEventArgs e)
     {
-        string id = e.Value.ToString();
-
-        storages = B_Storage.StorageListByWarehouse(id);
+        string idWarehouse = e.Value.ToString();
+        storages = B_Storage.StorageListByWarehouse(idWarehouse);
     }
 
     private void Save()
@@ -71,10 +78,15 @@
             {
                 product.TotalQuantity = product.TotalQuantity - quantity;
                 oStorage.PartialQuantity = oStorage.PartialQuantity - quantity;
-            }
 
-            B_Storage.UpdateStorage(oStorage);
-            B_Product.UpdateProduct(product);
+                B_Storage.UpdateStorage(oStorage);
+                B_Product.UpdateProduct(product);
+                message = $"El producto {oProduct.ProductName} ha sido actualizado.";
+            }
+            else
+            {
+                message = $"No existe la cantidad suficiente en bodega para el producto {oProduct.ProductName}.";
+            }
         }
         else
         {
@@ -83,9 +95,10 @@
 
             B_Storage.UpdateStorage(oStorage);
             B_Product.UpdateProduct(product);
+
+            message = $"El producto {oProduct.ProductName} ha sido actualizado.";
         }
     }
-
 
     private bool IsBiggerThanZero(int quantity, StorageEntity storage)
     {
@@ -93,9 +106,6 @@
         {
             return false;
         }
-
         return true;
     }
-
-
 }
